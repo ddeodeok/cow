@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.db.models import Q
-from .models import Cow, Sensor
+from .models import Cow, Sensor, SensorID
 from datetime import datetime
 from datetime import timedelta
 import time
@@ -83,9 +83,21 @@ def sensorTables (request):
         }
     )
 
+# 센서 목록 테이블
+def sensorTables2 (request):
+    sensors2 = SensorID.objects.order_by('-pk')
+
+    return render(
+        request,
+        'cow/sensor_tables2.html',
+        {
+            'sensors2':sensors2,
+        }
+    )
+
 
 def calf (request):
-    calfs = Cow.objects.filter(group__contains='calf')
+    calfs = Cow.objects.filter(group__contains='송아지')
      # 현재날짜로 일령 계산
     for i in range(len(calfs)) : 
         since_time = datetime.strptime(calfs[i].birthday,'%Y.%m.%d')
@@ -104,7 +116,7 @@ def calf (request):
 
 
 def farm1 (request):
-    farm1s = Cow.objects.filter(group__contains='first')
+    farm1s = Cow.objects.filter(group__contains='제1')
          # 현재날짜로 일령 계산
     for i in range(len(farm1s)) : 
         since_time = datetime.strptime(farm1s[i].birthday,'%Y.%m.%d')
@@ -122,7 +134,7 @@ def farm1 (request):
 
 
 def farm2 (request):
-    farm2s = Cow.objects.filter(group__contains='second')
+    farm2s = Cow.objects.filter(group__contains='제2')
      # 현재날짜로 일령 계산
     for i in range(len(farm2s)) : 
         since_time = datetime.strptime(farm2s[i].birthday,'%Y.%m.%d')
@@ -140,7 +152,7 @@ def farm2 (request):
 
 
 def farm3 (request):
-    farm3s = Cow.objects.filter(group__contains='third')
+    farm3s = Cow.objects.filter(group__contains='제3')
          # 현재날짜로 일령 계산
     for i in range(len(farm3s)) : 
         since_time = datetime.strptime(farm3s[i].birthday,'%Y.%m.%d')
@@ -167,21 +179,10 @@ def cow_detail (request, pk):
           cowd.stats = stat
           cowd.save()
 
-
         cowd = Cow.objects.get(pk=pk)
         sensors = Sensor.objects.all().order_by('-pk')[:100]
         sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
         
-        # stat = request.POST['stats']
-        # print(stat)
-
-        # cowd.stats = stat
-        # cowd.save()
-        
-  
-    
-  
-
         return render(
             request, 
             'cow/cow_detail.html',
@@ -193,40 +194,11 @@ def cow_detail (request, pk):
             }
         )
 
-# class Cow_detail(UpdateView,LoginRequiredMixin):
-#     model = Cow
-#     fields=['cow_num','group','SensorID_id','age','stats','empyt_days','carving_num','birthday']
-#     template_name = 'cow/cow_detail.html'
-    
-#     def dispatch(self, request, *args, **kwargs):
-#         if request.user.is_authenticated and request.user == self.get_object().author:
-#             return super(Cow_detail, self).dispatch(request, *args, **kwargs)
-#         else:
-#             raise PermissionDenied
-    
-#     def cow_detail (request, pk):
-#         cowd = Cow.objects.get(pk=pk)
-#         sensors = Sensor.objects.all().order_by('-pk')[:100]
-#         sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
-    
-#         return render(
-#             request, 
-#             'cow/cow_detail.html',
-#             {
-#                 'sensors':sensors,
-#                 'cowd':cowd,
-#                 'sensorid':sensorid,
-                
-#             }
-#         )
-
-
-
 
 
 # 발정 객체 테이블
 def estrus (request):
-    fertilizations = Cow.objects.filter(stats='fertilization')
+    fertilizations = Cow.objects.filter(stats='수정 완료')
     # 현재날짜로 일령 계산
     for i in range(len(fertilizations)) : 
         since_time = datetime.strptime(fertilizations[i].birthday,'%Y.%m.%d')
@@ -247,7 +219,7 @@ def estrus (request):
 
 # 최근 분만 객체 테이블
 def recentDelivery (request):
-    recentDeliverys = Cow.objects.filter(stats__contains='recent')
+    recentDeliverys = Cow.objects.filter(stats__contains='최근')
     print(recentDeliverys)
         # 현재날짜로 일령 계산
     for i in range(len(recentDeliverys)) : 
@@ -269,7 +241,7 @@ def recentDelivery (request):
 
 # 임신 테이블
 def pregnant (request):
-    pregnants = Cow.objects.filter(stats='Pregnancy')
+    pregnants = Cow.objects.filter(stats='임신')
     # 현재날짜로 일령 계산
     for i in range(len(pregnants)) : 
         since_time = datetime.strptime(pregnants[i].birthday,'%Y.%m.%d')
@@ -290,7 +262,7 @@ def pregnant (request):
 
 # 수정대기 테이블
 def rearingcalf (request):
-    preparations = Cow.objects.filter(stats='preparation for pregnancy')
+    preparations = Cow.objects.filter(stats='육성 우')
         # 현재날짜로 일령 계산
     for i in range(len(preparations)) : 
         since_time = datetime.strptime(preparations[i].birthday,'%Y.%m.%d')
@@ -328,6 +300,20 @@ class CowCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 
 
+class CreateSensor(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = SensorID
+
+    template_name = 'cow/create_sensor.html'
+    fields = '__all__'
+    def form_valid(self,form):
+        current_user = self.request.user
+        if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
+            form.instance.author = current_user
+            return super(CreateSensor, self).form_valid(form)
+        else:
+            return redirect('/login/')
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
 
 
 

@@ -1,0 +1,40 @@
+
+{% extends 'cow/base.html' %}
+{% load static %}
+
+{% block main_area %}
+{% include 'cow/navbar.html' %} 
+<body>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4"><i class="fa-sharp fa-solid fa-cow"></i>&nbsp;&nbsp;센서 추가</h1>
+                <hr/>
+                <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <div class='row'>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark ">
+                                <label for="inputPassword6" class="col-form-label ">센서 시리얼번호</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="text" name="sensor_serial" required="" id="id_sensor_serial" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">센서-종류</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="form-select" name = "sensor_ver" id="id_sensor_ver" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="mt-4">
+                    <button type="submit" class="btn btn-primary float-right">저장</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+{% endblock %}

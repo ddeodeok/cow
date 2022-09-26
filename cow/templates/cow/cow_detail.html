@@ -43,35 +43,32 @@
                                           <th></th>
                                         </tr>
                                     </thead>
-                                    
                                       <tbody> 
                                       <tr>
+                                        
                                           <td>{{ cowd.cow_num }}</td>
                                           <td>{{ cowd.group }}</td>
                                           <td>{{ cowd.SensorID_id }}</td>
                                           <td>{{ cowd.age }}</td>
                                           <td>{{ cowd.stats }}
-                                            <form method="post">{% csrf_token %}
+                                          <form method="post">{% csrf_token %}
                                             <select class="form-select" name="stats" required="" id="id_stats" aria-label="Default select example" value="{{ cowd.stats }}">
-                                              <option value="preparation for pregnancy">육성 우</option>                                                    
-                                              <option value="pregancy">임신</option>
-                                              <option value="2">수정완료</option>
-                                              <option value="3">발정</option>
-                                              <option value="4">최근분만 우</option>
-                                              <option value="5">미성숙 우</option>
+                                              <option value="임신">임신</option>                                                    
+                                              <option value="수정 완료">수정 완료</option>
+                                              <option value="육성 우">육성 우</option>
+                                              <option value="최근 분만 우">최근 분만 우</option>
                                             </select>
                                             <br>
                                             <button type="submit" class="btn btn-dark float-right">저장</button>
+                                          </form>
                                           </td>
                                           <td>{{ cowd.carving_num }}</td>
                                           <td>{{ cowd.empyt_days }}</td>
                                           <td>{{ cowd.birthday }}</td>
-                                          <td>
-                                              
-                                          </td>
+                                          <td>   </td>
+                                          
                                       </tr>
                                       </tbody>
-                                      </form>
                                 </table>
                             </div>
                         </div>

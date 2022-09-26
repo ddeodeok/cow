@@ -13,7 +13,7 @@ class SensorID(models.Model):
     sensor_ver = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'{self.sensor_serial}'
+        return f'[{self.pk}]{self.sensor_serial}'
 
 
 class Sensor(models.Model):

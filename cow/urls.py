@@ -18,6 +18,8 @@ urlpatterns = [
     path('tables_farm3/', views.farm3),
     path('cow_detail/<int:pk>/', views.cow_detail),
     path('tables_recentDelivery/', views.recentDelivery),
+    path('sensor_tables2/', views.sensorTables2),
+    path('create_sensor/', views.CreateSensor.as_view()),
 
     # path('create_post/', views.create_post, name='create_post'),
     # path('create/', views.create, name='create'),
