@@ -1,0 +1,105 @@
+{% comment %} {% extends 'cow/base.html' %} {% endcomment %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>농장 현황</title>
+        <link href="{% static 'cow/css/styles.css' %}" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        
+    </head>
+    <body class="sb-nav-fixed">
+        {% include 'cow/navbar.html' %}    
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">농장 현황</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="/">홈</a></li>
+                            <li class="breadcrumb-item active">그래프</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Area Chart Example
+                            </div>
+                            <div class="card-body"><canvas id="myAreaChart" width="100%" height="30"></canvas></div>
+                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        월별 송아지 출산 현황
+                                    </div>
+                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="50"></canvas></div>
+                                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-pie me-1"></i>
+                                        객체 상태 현황 : 총 {{ total }} 마리
+                                    </div>
+                                    <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+                                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2022</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script>
+            // Set new default font family and font color to mimic Bootstrap's default styling
+            Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+            Chart.defaults.global.defaultFontColor = '#292b2c';
+            var pre_count ={{ pregnants_count }};
+            var preparations_count ={{ preparations_count }};
+            var recent_count ={{ recent_count }};
+            var fertilizations_count ={{ fertilizations_count }};
+            // Pie Chart Example
+            var ctx = document.getElementById("myPieChart");
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ["임신중", "수정대기객체", "최근분만개체", "발정객체"],
+                    datasets: [{
+                        data: [pre_count, preparations_count, recent_count, fertilizations_count],
+                        backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
+                    }],
+                },
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'cow/js/scripts.js' %}"></script>
+        <script src="{% static 'cow/assets/demo/chart-area-demo.js' %}"></script>
+        <script src="{% static 'cow/assets/demo/chart-bar-demo.js' %}"></script>
+        {% comment %} <script src="{% static 'cow/assets/demo/chart-pie-demo.js' %}"></script>  {% endcomment %}
+</html>

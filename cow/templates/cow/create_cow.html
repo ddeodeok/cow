@@ -1,0 +1,100 @@
+
+{% extends 'cow/base.html' %}
+{% load static %}
+
+{% block main_area %}
+{% include 'cow/navbar.html' %} 
+<body>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4"><i class="fa-sharp fa-solid fa-cow"></i>&nbsp;&nbsp;소 객체 추가</h1>
+                <hr/>
+                <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <div class='row'>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark ">
+                                <label for="inputPassword6" class="col-form-label ">소 태그번호</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="text" name="cow_num" required="" id="id_cow_num" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">그룹 명</label>
+                            </div>
+                            <div class="col-4">
+                                <select class="form-select" name="group" required="" id="id_group" aria-label="Default select example">
+                                    <option selected>송아지 농장</option>
+                                    <option value="1">제1사육장</option>
+                                    <option value="2">제2사육장</option>
+                                    <option value="3">제3사육장</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">센서-id</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="form-select" name = "SensorID_id" id="id_sensorID" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">나이(일령)</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" name="age" id="id_age" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">상태</label>
+                            </div>
+                            <div class="col-4">
+                                <select class="form-select" name="stats" maxlength="50" required="" id="id_stats" aria-label="Default select example">
+                                    <option selected>육성 우</option>
+                                    <option value="1">임신</option>
+                                    <option value="2">수정완료</option>
+                                    <option value="3">발정</option>
+                                    <option value="3">최근분만 우</option>
+                                    <option value="3">미성숙 우</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">공태일</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" name="empyt_days" id="id_empyt_days" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">분만 횟수</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" name="carving_num" value="0" required="" id="id_carving_num" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2 alert alert-dark">
+                                <label for="inputPassword6" class="col-form-label">출생 일</label>
+                            </div>
+                            <div class="col-4">
+                                <input type="text" name="birthday" required="" id="id_birthday" class="form-control" aria-describedby="passwordHelpInline">
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="mt-4">
+                    <button type="submit" class="btn btn-primary float-right">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+{% endblock %}

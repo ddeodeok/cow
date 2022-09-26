@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Tables - SB Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+        <link href="{% static 'cow/css/styles.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        {% include 'cow/navbar.html' %} 
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Tables</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Tables</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
+                                <a target="_blank" href="https://datatables.net/">official DataTables documentation</a>
+                                .
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                DataTable Example
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>sensorID</th>
+                                            <th>temp</th>
+                                            <th>hpa</th>
+                                            <th>time</th>
+                                            <th>battery</th>
+                                            <th style ="width:16%">sensor_ver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sensor in sensors %}
+                                        <tr>
+                                            <td>{{ sensor.sensorID }}</td>
+                                            <td>{{ sensor.temp }}</td>
+                                            <td>{{ sensor.hpa }}</td>
+                                            <td>{{ sensor.time }}</td>
+                                            <td>{{ sensor.battery }}</td>
+                                            <td>{{ sensor.sensor_ver}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="card-body"><canvas id="SensorAreaChart" width="100%" height="30"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2022</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'cow/js/scripts.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'cow/js/datatables-simple-demo.js' %}"></script>
+        <script>// Set new default font family and font color to mimic Bootstrap's default styling
+            Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+            Chart.defaults.global.defaultFontColor = '#292b2c';
+            
+            
+            var dataList = [];
+            var labelList = [];
+            var vectorList = [];
+            {% for sensor in sensors %}
+            dataList.push( {{ sensor.temp }});
+            labelList.push( '{{ sensor.time }}');
+            vectorList.push( {{ sensor.vector }})
+            {% endfor %}
+            console.log('vectorList:', vectorList);
+
+            // Area Chart Example
+            var ctx = document.getElementById("SensorAreaChart");
+            var myLineChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: labelList.reverse(),
+                datasets: [{
+                  label: "temp",
+                  lineTension: 0.3,
+                  backgroundColor: "rgba(2,117,216,0.2)",
+                  borderColor: "rgba(2,117,216,1)",
+                  pointRadius: 5,
+                  pointBackgroundColor: "rgba(2,117,216,1)",
+                  pointBorderColor: "rgba(255,255,255,0.8)",
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                  pointHitRadius: 50,
+                  pointBorderWidth: 2,
+                  data: dataList.reverse(),
+                },
+                {
+                  label: "vector",
+                  lineTension: 0.3,
+                  backgroundColor: "rgba(2,117,216,0.2)",
+                  borderColor: "#33CC33",
+                  pointRadius: 5,
+                  pointBackgroundColor: "#33CC33",
+                  pointBorderColor: "rgba(255,255,255,0.8)",
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: "#33CC33",
+                  pointHitRadius: 50,
+                  pointBorderWidth: 2,
+                  data: vectorList.reverse(),
+                }],
+              },
+              options: {
+                scales: {
+                  xAxes: [{
+                    time: {
+                      unit: 'date'
+                    },
+                    gridLines: {
+                      display: false
+                    },
+                    ticks: {
+                      maxTicksLimit: 7
+                    }
+                  }],
+                  yAxes: [{
+                    ticks: {
+                      min: 25,
+                      max: 400,
+                      maxTicksLimit: 5
+                    },
+                    gridLines: {
+                      color: "rgba(0, 0, 0, .125)",
+                    }
+                  }],
+                },
+                legend: {
+                  display: false
+                }
+              }
+            });
+            </script> 
+    </body>
+</html>
