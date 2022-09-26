@@ -8,6 +8,7 @@ from django.db.models import Q
 from .models import Cow, Sensor, SensorID
 from datetime import datetime
 from datetime import timedelta
+from datetime import date
 import time
 import logging
 
@@ -15,15 +16,13 @@ import logging
 
 # 메인 페이지 
 def cow (request):
-    # cowd = Cow.objects.get(pk=pk)
-    # sensors = Sensor.objects.all().order_by('-pk')[:100]
-    # sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
-    # if sensorid.vector >= 200:
-    #     bar_li.append(senso)
-
+    results = Sensor.objects.raw('SELECT * from cow_cow WHERE SensorID_id_id in ( select sensorID from cow_sensor where time in (select max(time) from cow_sensor group by sensorID) and vector > 100)')
     return render(
         request,
-        'cow/main.html'
+        'cow/main.html',{
+            'results':results
+
+        }
     )
 
 
@@ -49,11 +48,6 @@ def charts (request):
 # 소객체 테이블
 def cowtables (request):
     cows = Cow.objects.order_by('-pk')
-
-    # print(cows[3].group)
-    # if cows[3].group == 'calf farm':
-    #     print("11111111111~",cows[3].group)
-    #     cows[3].group = '송아지 농장'
 
      # 현재날짜로 일령 계산
     for i in range(len(cows)) : 
@@ -172,27 +166,27 @@ def farm3 (request):
 
 # 소 상세 페이지
 def cow_detail (request, pk):
-        if request.POST:
-          stat = request.POST['stats']
-          print("stat:", stat)
-          cowd = Cow.objects.get(pk=pk)
-          cowd.stats = stat
-          cowd.save()
+    if request.POST:
+      stat = request.POST['stats']
+      print("stat:", stat)
+      cowd = Cow.objects.get(pk=pk)
+      cowd.stats = stat
+      cowd.save()
 
-        cowd = Cow.objects.get(pk=pk)
-        sensors = Sensor.objects.all().order_by('-pk')[:100]
-        sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
-        
-        return render(
-            request, 
-            'cow/cow_detail.html',
-            {
-                'sensors':sensors,
-                'cowd':cowd,
-                'sensorid':sensorid,
-                
-            }
-        )
+    cowd = Cow.objects.get(pk=pk)
+    sensors = Sensor.objects.all().order_by('-pk')[:100]
+    sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
+    
+    return render(
+        request, 
+        'cow/cow_detail.html',
+        {
+            'sensors':sensors,
+            'cowd':cowd,
+            'sensorid':sensorid,
+            
+        }
+    )
 
 
 
@@ -242,15 +236,25 @@ def recentDelivery (request):
 # 임신 테이블
 def pregnant (request):
     pregnants = Cow.objects.filter(stats='임신')
-    # 현재날짜로 일령 계산
+    # 현재날짜로 일령(나이) 계산
     for i in range(len(pregnants)) : 
         since_time = datetime.strptime(pregnants[i].birthday,'%Y.%m.%d')
         result = datetime.now() - since_time
         test = str(result).split()
         pregnants[i].age = int(test[0])
+
+    # 예상 분만 날짜 계산
     for i in range(len(pregnants)) :
         ev_time = pregnants[i].pregnancy_date
-        result = datetime.now() - ev_time
+        childbirth_day =  ev_time + timedelta(days=285)
+        pregnants[i].pregnancy_date = childbirth_day
+        left_days = childbirth_day - datetime.now().date()
+        # pregnants[i].left=left_days
+
+        str_left = str(left_days).split()
+        pregnants[i].left=int(str_left[0])
+        
+
         
 
     return render(
@@ -259,6 +263,8 @@ def pregnant (request):
         {
             "pregnants":pregnants,
             'pregnants_count':Cow.objects.filter(stats='Pregnancy').count(),
+            'childbirth_day':childbirth_day
+            
         }
     )
 

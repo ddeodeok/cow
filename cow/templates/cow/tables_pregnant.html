@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table id="datatablesSimple">
+                                <table id="datatablesSimple" style="text-align:center;" >
                                     <thead>
                                         <tr>
                                             <th>소id</th>
@@ -65,7 +65,17 @@
                                             <td>{{ pregnant.age }}</td>
                                             <td>{{ pregnant.stats }}</td>
                                             <td>{{ pregnant.carving_num}}</td>
-                                            <td>{{ pregnant.pregnancy_date}}</td>
+                                            {% if pregnant.left > 0 %}
+                                                <td>{{ pregnant.pregnancy_date|date:'Y-m-d'}}
+                                                    </br>
+                                                    {{ pregnant.left}} days
+                                                </td>
+                                            {% else %}
+                                                <td style="background-color:#f44226;font-weight:bold">{{ pregnant.pregnancy_date|date:'Y-m-d'}}
+                                                    </br>
+                                                    {{ pregnant.left}} days
+                                                </td>
+                                            {% endif %}
                                             <td>{{ pregnant.birthday}}</td>
                                         </tr>
                                         {% endfor %}
