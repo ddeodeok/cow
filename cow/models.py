@@ -62,6 +62,7 @@ class Cow(models.Model):
     age = models.IntegerField(blank=True, null=True)
     empyt_days = models.IntegerField(blank=True, null=True)
     birthday = models.CharField(max_length=50,blank=True, null=True)
+    pregnancy_date = models.DateField(blank=True, null=True)
 
     SensorID_id = models.ForeignKey("SensorID", on_delete=models.SET_NULL,blank=True, null=True)
     

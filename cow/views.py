@@ -248,6 +248,10 @@ def pregnant (request):
         result = datetime.now() - since_time
         test = str(result).split()
         pregnants[i].age = int(test[0])
+    for i in range(len(pregnants)) :
+        ev_time = pregnants[i].pregnancy_date
+        result = datetime.now() - ev_time
+        
 
     return render(
         request,
@@ -311,7 +315,7 @@ class CreateSensor(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             form.instance.author = current_user
             return super(CreateSensor, self).form_valid(form)
         else:
-            return redirect('/login/')
+            return redirect('/sensor_tables2/')
     def test_func(self):
         return self.request.user.is_superuser or self.request.user.is_staff
 
