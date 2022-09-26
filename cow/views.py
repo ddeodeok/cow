@@ -157,22 +157,70 @@ def farm3 (request):
     )
 
 
+
 # 소 상세 페이지
 def cow_detail (request, pk):
-    cowd = Cow.objects.get(pk=pk)
-    sensors = Sensor.objects.all().order_by('-pk')[:100]
-    sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
+        if request.POST:
+          stat = request.POST['stats']
+          print("stat:", stat)
+          cowd = Cow.objects.get(pk=pk)
+          cowd.stats = stat
+          cowd.save()
+
+
+        cowd = Cow.objects.get(pk=pk)
+        sensors = Sensor.objects.all().order_by('-pk')[:100]
+        sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
+        
+        # stat = request.POST['stats']
+        # print(stat)
+
+        # cowd.stats = stat
+        # cowd.save()
+        
   
-    return render(
-        request, 
-        'cow/cow_detail.html',
-        {
-            'sensors':sensors,
-            'cowd':cowd,
-            'sensorid':sensorid,
-            
-        }
-    )
+    
+  
+
+        return render(
+            request, 
+            'cow/cow_detail.html',
+            {
+                'sensors':sensors,
+                'cowd':cowd,
+                'sensorid':sensorid,
+                
+            }
+        )
+
+# class Cow_detail(UpdateView,LoginRequiredMixin):
+#     model = Cow
+#     fields=['cow_num','group','SensorID_id','age','stats','empyt_days','carving_num','birthday']
+#     template_name = 'cow/cow_detail.html'
+    
+#     def dispatch(self, request, *args, **kwargs):
+#         if request.user.is_authenticated and request.user == self.get_object().author:
+#             return super(Cow_detail, self).dispatch(request, *args, **kwargs)
+#         else:
+#             raise PermissionDenied
+    
+#     def cow_detail (request, pk):
+#         cowd = Cow.objects.get(pk=pk)
+#         sensors = Sensor.objects.all().order_by('-pk')[:100]
+#         sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
+    
+#         return render(
+#             request, 
+#             'cow/cow_detail.html',
+#             {
+#                 'sensors':sensors,
+#                 'cowd':cowd,
+#                 'sensorid':sensorid,
+                
+#             }
+#         )
+
+
 
 
 

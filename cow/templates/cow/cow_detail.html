@@ -40,20 +40,38 @@
                                           <th>산차</th>
                                           <th>공태일</th>
                                           <th>출생일</th>
+                                          <th></th>
                                         </tr>
                                     </thead>
-                                    <tbody> 
+                                    
+                                      <tbody> 
                                       <tr>
                                           <td>{{ cowd.cow_num }}</td>
                                           <td>{{ cowd.group }}</td>
                                           <td>{{ cowd.SensorID_id }}</td>
                                           <td>{{ cowd.age }}</td>
-                                          <td>{{ cowd.stats }}</td>
+                                          <td>{{ cowd.stats }}
+                                            <form method="post">{% csrf_token %}
+                                            <select class="form-select" name="stats" required="" id="id_stats" aria-label="Default select example" value="{{ cowd.stats }}">
+                                              <option value="preparation for pregnancy">육성 우</option>                                                    
+                                              <option value="pregancy">임신</option>
+                                              <option value="2">수정완료</option>
+                                              <option value="3">발정</option>
+                                              <option value="4">최근분만 우</option>
+                                              <option value="5">미성숙 우</option>
+                                            </select>
+                                            <br>
+                                            <button type="submit" class="btn btn-dark float-right">저장</button>
+                                          </td>
                                           <td>{{ cowd.carving_num }}</td>
                                           <td>{{ cowd.empyt_days }}</td>
                                           <td>{{ cowd.birthday }}</td>
+                                          <td>
+                                              
+                                          </td>
                                       </tr>
-                                    </tbody>
+                                      </tbody>
+                                      </form>
                                 </table>
                             </div>
                         </div>
@@ -144,4 +162,24 @@
           });
           </script> 
     </body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+jQuery(document).ready(function($) {
+  /*
+  if ($("#id_stats").attr("value")) {
+    //alert($("#id_stats").attr("value"));
+    $("#id_stats").val($("#id_stats").attr("value"));
+  }
+*/
+  $("select").each(function(oi) {
+    if ($(this).attr("value")) {
+      //alert($("#id_stats").attr("value"));
+      $(this).val($(this).attr("value"));
+    }
+  });
+
+
+});
+</script>
 </html>
