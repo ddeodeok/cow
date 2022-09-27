@@ -9,6 +9,7 @@ from .models import Cow, Sensor, SensorID, Event
 from datetime import datetime
 from datetime import timedelta
 from datetime import date
+from django.contrib import auth
 import time
 import logging
 import pandas as pd
@@ -33,38 +34,25 @@ def cow (request):
 
 
 def login(request):
-    if request.method == "GET":
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = auth.authenticate(request, username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('/main/')
+        else:
+            return render(request, 'cow/login.html', {'error': 'username or password is incorrect'})
+    else:
         return render(request, 'cow/login.html')
 
-    elif request.method == "POST":
-        username = request.POST.get('username', None)
-        password = request.POST.get('password', None)
-
-        res_data ={}
-        if not (username and password):
-            res_data['error'] = '모든 값을 입력하세요!'
-
-        else:
-            member = BoardMember.objects.get(username=username)
-            #print(member.id)
-
-            if check_password(password, member.password):
-                #print(request.session.get('user'))
-                request.session['user'] = member.id
-
-                return redirect('/')
 
 
-            else:
-                res_data['error'] = '비밀번호가 다릅니다!'
 
-        return render(request, 'cow/login.html', res_data)
 
-# def logout(request):
-#     if request.session.get('user'):
-#         del(request.session['user'])
-
-#     return redirect('/')
+def logout(request):
+  auth.logout(request)
+  return redirect('cow/login.html')
 
 # def register(request):
 #     if request.method == "GET":

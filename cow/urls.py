@@ -3,9 +3,11 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 
+
 urlpatterns = [
 
     path('',views.login),
+    # path('logout/'.views.logout),
     path('main/', views.cow),
     path('charts/', views.charts),
     path('tables/', views.cowtables),
