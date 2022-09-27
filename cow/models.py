@@ -75,7 +75,7 @@ class Cow(models.Model):
 
 
 class Event(models.Model):
-    event_time = models.DateTimeField()
+    event_time = models.DateTimeField(blank=True, null=True)
     event_name = models.CharField(max_length=50)
     description = models.TextField()
    

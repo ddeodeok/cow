@@ -17,22 +17,19 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4"><i class="fa-sharp fa-solid fa-cow"></i>&nbsp;&nbsp;객체 테이블</h1>
+                        <h1 class="mt-4"><i class="fa-sharp fa-solid fa-cow"></i>&nbsp;&nbsp;제1사육장 총 {{farm1_count}} 마리</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/main/">Dashboard</a></li>
                             <li class="breadcrumb-item active">Tables</li>
                         </ol>
                         <div class="card mb-4">
-                            <div class="card-body">
-                                DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
-                                <a target="_blank" href="https://datatables.net/">official DataTables documentation</a>
-                            </div>
+                            
                         </div>
                         <div class="card mb-4">
                             <div class="card-header row">
                                 <div class="col-10">
                                 <i class="fas fa-table me-1"></i>
-                                송아지 목록
+                                객체 목록 총 {{farm1_count}} 마리
                                 </div>
                                 <div class="col-2"style="text-align:right;">
                                 {% if user.is_authenticated %}

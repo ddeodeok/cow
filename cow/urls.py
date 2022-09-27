@@ -1,10 +1,12 @@
 from xml.etree.ElementInclude import include
-from django.urls import path
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    
-    path('', views.cow),
+
+    path('',views.login),
+    path('main/', views.cow),
     path('charts/', views.charts),
     path('tables/', views.cowtables),
     path('sensor_tables/', views.sensorTables),

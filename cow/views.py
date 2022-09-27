@@ -11,12 +11,18 @@ from datetime import timedelta
 from datetime import date
 import time
 import logging
+import pandas as pd
+import numpy as np
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth.hashers import make_password, check_password
 
 # Create your views here.
 
 # 메인 페이지 
 def cow (request):
-    results = Sensor.objects.raw('SELECT * from cow_cow WHERE SensorID_id_id in ( select sensorID from cow_sensor where time in (select max(time) from cow_sensor group by sensorID) and vector > 100)')
+    results = Sensor.objects.raw('SELECT * from cow_cow WHERE SensorID_id_id in ( select sensorID from cow_sensor where time in (select max(time) from cow_sensor group by sensorID) and vector > 50)')
+    
     return render(
         request,
         'cow/main.html',{
@@ -26,10 +32,84 @@ def cow (request):
     )
 
 
+def login(request):
+    if request.method == "GET":
+        return render(request, 'cow/login.html')
+
+    elif request.method == "POST":
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+
+        res_data ={}
+        if not (username and password):
+            res_data['error'] = '모든 값을 입력하세요!'
+
+        else:
+            member = BoardMember.objects.get(username=username)
+            #print(member.id)
+
+            if check_password(password, member.password):
+                #print(request.session.get('user'))
+                request.session['user'] = member.id
+
+                return redirect('/')
+
+
+            else:
+                res_data['error'] = '비밀번호가 다릅니다!'
+
+        return render(request, 'cow/login.html', res_data)
+
+# def logout(request):
+#     if request.session.get('user'):
+#         del(request.session['user'])
+
+#     return redirect('/')
+
+# def register(request):
+#     if request.method == "GET":
+#         return render(request, 'cow/main.html')
+
+#     elif request.method == "POST":
+#         #print (request.POST)
+#         username    = request.POST.get('username', None)
+#         #print(username)
+#         password    = request.POST.get('password', None)
+#         #print(password)
+#         re_password = request.POST.get('re_password', None)
+#         #print(re_password)
+#         email       = request.POST.get('email', None)
+
+
+#         res_data = {}
+#         if not (username and password and re_password and email):
+#             res_data['error'] = '모든 값을 입력하세요!'
+
+#         elif password != re_password:
+#             res_data['error'] = '비밀번호가 다릅니다'
+#             print(res_data)
+
+#         else:
+#             member = BoardMember(
+#                 username    = username,
+#                 email       = email,
+#                 password    = make_password(password)
+#             )
+#             member.save()
+
+#         return render(request, 'cow/main.html', res_data)
+    
+
 
 # 차트 페이지 관리
 def charts (request):
     pregnants = Cow.objects.filter(stats='임신')
+
+    for i in range(len(pregnants)) :
+        ev_time = pregnants[i].pregnancy_date
+        childbirth_day =  ev_time + timedelta(days=285)
+        print(childbirth_day)
+        
     return render(
         request,
         'cow/charts.html',
@@ -39,7 +119,7 @@ def charts (request):
             'recent_count':Cow.objects.filter(stats__contains='최근 분만 우').count(),
             'preparations_count':Cow.objects.filter(stats='육성 우').count(),
             'total':Cow.objects.all().count()
-
+     
         }
     )
 
@@ -60,6 +140,7 @@ def cowtables (request):
         'cow/tables.html',
         {
             'cows':cows,
+            'total':Cow.objects.all().count()
         }
     )
 
@@ -104,6 +185,7 @@ def calf (request):
         'cow/tables_calf.html',
         {
             'calfs':calfs,
+            'calf_count':Cow.objects.filter(group__contains='송아지').count()
         }
         
     )
@@ -123,6 +205,7 @@ def farm1 (request):
         'cow/tables_farm1.html',
         {
             'farm1s':farm1s,
+            'farm1_count':Cow.objects.filter(group__contains='제1').count()
         }
     )
 
@@ -141,6 +224,7 @@ def farm2 (request):
         'cow/tables_farm2.html',
         {
             'farm2s':farm2s,
+            'farm2_count':Cow.objects.filter(group__contains='제2').count()
         }
     )
 
@@ -159,6 +243,7 @@ def farm3 (request):
         'cow/tables_farm3.html',
         {
             'farm3s':farm3s,
+            'farm3_count':Cow.objects.filter(group__contains='제3').count()
         }
     )
 
@@ -240,7 +325,7 @@ def estrus (request):
         'cow/tables_estrus.html',
         {
             "fertilizations":fertilizations,
-            'fertilizations_count':Cow.objects.filter(stats='fertilization').count(),
+            'fertilizations_count':Cow.objects.filter(stats='수정 완료').count(),
         }
     )
 
@@ -262,7 +347,7 @@ def recentDelivery (request):
         'cow/tables_recentDelivery.html',
         {
             'recentDeliverys':recentDeliverys,
-            'recent_count':Cow.objects.filter(stats__contains='recent').count(),
+            'recent_count':Cow.objects.filter(stats__contains='최근').count(),
         }
     )
 
@@ -284,8 +369,6 @@ def pregnant (request):
         childbirth_day =  ev_time + timedelta(days=285)
         pregnants[i].pregnancy_date = childbirth_day
         left_days = childbirth_day - datetime.now().date()
-        # pregnants[i].left=left_days
-
         str_left = str(left_days).split()
         pregnants[i].left=int(str_left[0])
         
@@ -297,7 +380,7 @@ def pregnant (request):
         'cow/tables_pregnant.html',
         {
             "pregnants":pregnants,
-            'pregnants_count':Cow.objects.filter(stats='Pregnancy').count(),
+            'pregnants_count':Cow.objects.filter(stats='임신').count(),
             'childbirth_day':childbirth_day
             
         }
@@ -320,7 +403,7 @@ def rearingcalf (request):
         'cow/tables_rearingcalf.html',
         {
             'preparations':preparations,
-            'preparations_count':Cow.objects.filter(stats='preparation for pregnancy').count(),
+            'preparations_count':Cow.objects.filter(stats='육성 우').count(),
         }
     )
 
