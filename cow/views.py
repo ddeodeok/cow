@@ -10,11 +10,15 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import date
 from django.contrib import auth
+from django.contrib.auth import authenticate
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
+from django.contrib.auth import login
 import time
 import logging
 import pandas as pd
 import numpy as np
-from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 
@@ -32,7 +36,7 @@ def cow (request):
         }
     )
 
-
+# 로그인
 def login(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -49,44 +53,12 @@ def login(request):
 
 
 
-
+# 로그아웃
 def logout(request):
   auth.logout(request)
-  return redirect('cow/login.html')
+  return redirect('/')
 
-# def register(request):
-#     if request.method == "GET":
-#         return render(request, 'cow/main.html')
-
-#     elif request.method == "POST":
-#         #print (request.POST)
-#         username    = request.POST.get('username', None)
-#         #print(username)
-#         password    = request.POST.get('password', None)
-#         #print(password)
-#         re_password = request.POST.get('re_password', None)
-#         #print(re_password)
-#         email       = request.POST.get('email', None)
-
-
-#         res_data = {}
-#         if not (username and password and re_password and email):
-#             res_data['error'] = '모든 값을 입력하세요!'
-
-#         elif password != re_password:
-#             res_data['error'] = '비밀번호가 다릅니다'
-#             print(res_data)
-
-#         else:
-#             member = BoardMember(
-#                 username    = username,
-#                 email       = email,
-#                 password    = make_password(password)
-#             )
-#             member.save()
-
-#         return render(request, 'cow/main.html', res_data)
-    
+   
 
 
 # 차트 페이지 관리
@@ -275,12 +247,6 @@ def cow_detail (request, pk):
     sensorIDs = SensorID.objects.all()
     events = Event.objects.filter(cid=cowd)
 
-
-    # # 현재날짜로 일령 계산
-    # since_time = datetime.strptime(cowd.birthday,'%Y.%m.%d')
-    # result = event_ti - since_time
-    # test = str(result).split()
-    # cowdage = int(test[0])
     
     return render(
         request, 
@@ -359,8 +325,6 @@ def pregnant (request):
         left_days = childbirth_day - datetime.now().date()
         str_left = str(left_days).split()
         pregnants[i].left=int(str_left[0])
-        
-
         
 
     return render(
