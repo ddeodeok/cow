@@ -29,7 +29,8 @@
                                 소 상세 정보
                             </div>
                             <div class="card-body">
-                                <table id="datatablesSimple">
+                              <form method="post">{% csrf_token %}
+                                  <table class='table table-striped'>
                                     <thead>
                                         <tr>
                                           <th>소id</th>
@@ -45,31 +46,75 @@
                                     </thead>
                                       <tbody> 
                                       <tr>
-                                        
-                                          <td>{{ cowd.cow_num }}</td>
-                                          <td>{{ cowd.group }}</td>
-                                          <td>{{ cowd.SensorID_id }}</td>
-                                          <td>{{ cowd.age }}</td>
-                                          <td>{{ cowd.stats }}
-                                          <form method="post">{% csrf_token %}
-                                            <select class="form-select" name="stats" required="" id="id_stats" aria-label="Default select example" value="{{ cowd.stats }}">
-                                              <option value="임신">임신</option>                                                    
-                                              <option value="수정 완료">수정 완료</option>
-                                              <option value="육성 우">육성 우</option>
-                                              <option value="최근 분만 우">최근 분만 우</option>
-                                            </select>
-                                            <br>
-                                            <button type="submit" class="btn btn-dark float-right">저장</button>
-                                          </form>
-                                          </td>
-                                          <td>{{ cowd.carving_num }}</td>
-                                          <td>{{ cowd.empyt_days }}</td>
-                                          <td>{{ cowd.birthday }}</td>
-                                          <td>   </td>
-                                          
+                                        <td>{{ cowd.cow_num }}</td>
+                                        <td>{{ cowd.group }}</td>
+                                        <td>
+                                          <select class="form-select" name="SensorID_id" required="" id="id_SensorID_id" aria-label="Default select example" value="{{ cowd.SensorID_id }}">
+                                            {% for sensorID in sensorIDs %}
+                                            <option value="{{ sensorID.sensor_serial }}">{{ sensorID.sensor_serial }}</option>
+                                            {% endfor %}                                           
+                                          </select> 
+                                        </td>
+                                        <td>{{ cowd.age }}</td>
+                                        <td>
+                                          <select class="form-select" name="stats" required="" id="id_stats" aria-label="Default select example" value="{{ cowd.stats }}">
+                                            <option value="임신">임신</option>                                                    
+                                            <option value="수정 완료">수정 완료</option>
+                                            <option value="육성 우">육성 우</option>
+                                            <option value="최근 분만 우">최근 분만 우</option>
+                                          </select>
+                                          <br>
+                                        </td>
+                                        <td>{{ cowd.carving_num }}</td>
+                                        <td>{{ cowd.empyt_days }}</td>
+                                        <td>{{ cowd.birthday }}</td>
+                                        <td>
+                                          <button type="submit" class="btn btn-dark float-right">저장</button> 
+                                        </td>
                                       </tr>
+                                      <table class="table table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">날짜</th>
+                                            <th scope="col">이벤트 이름</th>
+                                            <th scope="col">비고</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <!-- 이벤트 입력 및 출력-->
+                                          <tr>
+                                            <th scope="row"></th>
+                                            <td width="13%">
+                                              <input type="date" name="event_time" required="" id="id_event_time" class="form-control">
+                                            </td>
+                                            <td width="20%">
+                                              <select class="form-select" name="event_name" required="" id="id_stats" aria-label="Default select example" value="{{ cowd.stats }}">
+                                                <option value="출생">출생</option>                                                    
+                                                <option value="시스템 발정">시스템 발정</option>
+                                                <option value="임신">임신</option>
+                                                <option value="도태">도태</option>
+                                              </select>
+                                            </td>
+                                            <td>
+                                              <input type="text" name="description" required="" id="id_description" class="form-control">
+                                            </td>
+                                          </tr>
+                                            {% for event in events %}
+                                          <tr>
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                              <td>{{ event.event_time }}</td>
+                                         
+                                              <td>{{ event.event_name }}</td>
+                                              <td>{{ event.description }}</td>
+                                            
+                                          </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                      </table>
                                       </tbody>
                                 </table>
+                              </form>
                             </div>
                         </div>
                     </div>

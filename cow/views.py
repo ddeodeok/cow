@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.db.models import Q
-from .models import Cow, Sensor, SensorID
+from .models import Cow, Sensor, SensorID, Event
 from datetime import datetime
 from datetime import timedelta
 from datetime import date
@@ -29,15 +29,15 @@ def cow (request):
 
 # 차트 페이지 관리
 def charts (request):
-    pregnants = Cow.objects.filter(stats='Pregnancy')
+    pregnants = Cow.objects.filter(stats='임신')
     return render(
         request,
         'cow/charts.html',
         {
-            'pregnants_count':Cow.objects.filter(stats='Pregnancy').count(),
-            'fertilizations_count':Cow.objects.filter(stats='fertilization').count(),
-            'recent_count':Cow.objects.filter(stats__contains='recent').count(),
-            'preparations_count':Cow.objects.filter(stats='preparation for pregnancy').count(),
+            'pregnants_count':Cow.objects.filter(stats='임신').count(),
+            'fertilizations_count':Cow.objects.filter(stats='수정 완료').count(),
+            'recent_count':Cow.objects.filter(stats__contains='최근 분만 우').count(),
+            'preparations_count':Cow.objects.filter(stats='육성 우').count(),
             'total':Cow.objects.all().count()
 
         }
@@ -166,16 +166,48 @@ def farm3 (request):
 
 # 소 상세 페이지
 def cow_detail (request, pk):
+    # 센서, 상태 수정 페이지
     if request.POST:
-      stat = request.POST['stats']
-      print("stat:", stat)
-      cowd = Cow.objects.get(pk=pk)
-      cowd.stats = stat
-      cowd.save()
+        stat = request.POST['stats']
+        print("stat:", stat)
+        cowd = Cow.objects.get(pk=pk)
+        cowd.stats = stat
+        cowd.save()
+    
+    if request.POST:
+        SensorID_ids = request.POST['SensorID_id']
+        print('SensorID_id:', SensorID_ids)
+        cowd = Cow.objects.get(pk=pk)
+        cowd.SensorID_id = SensorID.objects.get(sensor_serial=SensorID_ids)
+        cowd.save()
+    # 이벤트 기록 입력 페이지
+    if request.POST:
+        event_nums = request.POST['event_name']
+        event_ti = request.POST['event_time']
+        event_de = request.POST['description']
 
+        event_data = Event()
+        event_data.event_name = event_nums
+        event_data.event_time = event_ti
+        event_data.description = event_de
+        event_data.cid = Cow.objects.get(pk=pk)
+        event_data.save()
+
+        # str_left = str(event_data.event_time).split()
+        # event_data.left=int(str_left[0])
+    
     cowd = Cow.objects.get(pk=pk)
     sensors = Sensor.objects.all().order_by('-pk')[:100]
     sensorid = Sensor.objects.filter(sensorID=cowd.SensorID_id)[:250]
+    sensorIDs = SensorID.objects.all()
+    events = Event.objects.filter(cid=cowd)
+
+
+    # # 현재날짜로 일령 계산
+    # since_time = datetime.strptime(cowd.birthday,'%Y.%m.%d')
+    # result = event_ti - since_time
+    # test = str(result).split()
+    # cowdage = int(test[0])
     
     return render(
         request, 
@@ -184,6 +216,9 @@ def cow_detail (request, pk):
             'sensors':sensors,
             'cowd':cowd,
             'sensorid':sensorid,
+            'sensorIDs':sensorIDs,
+            'events':events,
+            # 'cowdage':cowdage,
             
         }
     )

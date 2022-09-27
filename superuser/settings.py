@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'sensor_page',
     'single_pages',
     
+    
 ]
 
 MIDDLEWARE = [
