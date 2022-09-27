@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth
 import time
 import logging
 import pandas as pd
@@ -27,11 +29,21 @@ from django.contrib.auth.hashers import make_password, check_password
 # 메인 페이지 
 def cow (request):
     results = Sensor.objects.raw('SELECT * from cow_cow WHERE SensorID_id_id in ( select sensorID from cow_sensor where time in (select max(time) from cow_sensor group by sensorID) and vector > 50)')
-    
+    results2 = Cow.objects.raw('SELECT id,SUBSTRING(pregnancy_date,1,10) as "TEST" , COUNT(*) as cnt FROM cow_cow WHERE TEST is not null GROUP BY SUBSTRING(pregnancy_date,1,10)')
+    for j in range(len(results2)):
+        data = datetime.strptime(results2[j].TEST,'%Y-%m-%d')
+       
+        results2[j].TEST = data + timedelta(days=285)
+        results2[j].TEST = results2[j].TEST.month
     return render(
         request,
         'cow/main.html',{
-            'results':results
+            'results':results,
+            'results2':results2,
+            'farm1_count':Cow.objects.filter(group__contains='제1').count(),
+            'farm2_count':Cow.objects.filter(group__contains='제2').count(),
+            'farm3_count':Cow.objects.filter(group__contains='제3').count(),
+            'calf_count':Cow.objects.filter(group__contains='송아지').count(),
 
         }
     )
@@ -59,17 +71,30 @@ def logout(request):
   return redirect('/')
 
    
-
+# datetime.strptime(cows[i].birthday,'%Y.%m.%d')
 
 # 차트 페이지 관리
 def charts (request):
-    pregnants = Cow.objects.filter(stats='임신')
+    pregnants = Cow.objects.filter(stats='임신') 
+    results = Cow.objects.raw('SELECT id,SUBSTRING(pregnancy_date,1,10) as "TEST" , COUNT(*) as cnt FROM cow_cow WHERE TEST is not null GROUP BY SUBSTRING(pregnancy_date,1,10)')
+    for j in range(len(results)):
+        data = datetime.strptime(results[j].TEST,'%Y-%m-%d')
+       
+        results[j].TEST = data + timedelta(days=285)
+        results[j].TEST = results[j].TEST.month
+        # print(datetime.strptime(results[j].TEST,'%Y.%m.%d'))
+        print(results[j].TEST)
+        # print(type(j.TEST))
+   
+
 
     for i in range(len(pregnants)) :
         ev_time = pregnants[i].pregnancy_date
         childbirth_day =  ev_time + timedelta(days=285)
-        print(childbirth_day)
-        
+       
+  
+   
+
     return render(
         request,
         'cow/charts.html',
@@ -78,7 +103,12 @@ def charts (request):
             'fertilizations_count':Cow.objects.filter(stats='수정 완료').count(),
             'recent_count':Cow.objects.filter(stats__contains='최근 분만 우').count(),
             'preparations_count':Cow.objects.filter(stats='육성 우').count(),
-            'total':Cow.objects.all().count()
+            'total':Cow.objects.all().count(),
+            'farm1_count':Cow.objects.filter(group__contains='제1').count(),
+            'farm2_count':Cow.objects.filter(group__contains='제2').count(),
+            'farm3_count':Cow.objects.filter(group__contains='제3').count(),
+            'calf_count':Cow.objects.filter(group__contains='송아지').count(),
+            'results':results,
      
         }
     )
