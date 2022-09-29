@@ -88,7 +88,7 @@
             var myPieChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ["임신중", "수정대기객체", "최근분만개체", "발정객체"],
+                    labels: ["임신중", "수정대기객체", "최근분만객체", "수정완료객체"],
                     datasets: [{
                         data: [pre_count, preparations_count, recent_count, fertilizations_count],
                         backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
@@ -109,7 +109,7 @@
                 data: {
                     labels: ["송아지", "제1사육장", "제2사육장", "제3사육장"],
                     datasets: [{
-                        label: "Revenue",
+                        label: "마리",
                         backgroundColor: "rgba(2,117,216,1)",
                         borderColor: "rgba(2,117,216,1)",
                         data: [{{calf_count}}, {{farm1_count}}, {{farm2_count}}, {{farm3_count}}],
@@ -169,7 +169,7 @@
                 data: {
                     labels: datelist,
                     datasets: [{
-                        label: "Sessions",
+                        label: "출산 예정 객체",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
